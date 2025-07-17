@@ -13,28 +13,38 @@ const notificationOptions = {
 
 const Popup = () => {
   const { isLight } = useStorage(exampleThemeStorage);
-  const logo = isLight ? 'popup/logo_vertical.svg' : 'popup/logo_vertical_dark.svg';
+  const logo = isLight ? 'popup/logo.svg' : 'popup/logo_dark.svg';
 
   const goGithubSite = () => chrome.tabs.create(PROJECT_URL_OBJECT);
 
-  const injectContentScript = async () => {
-    const [tab] = await chrome.tabs.query({ currentWindow: true, active: true });
+  // const injectContentScript = async () => {
+  //   const [tab] = await chrome.tabs.query({ currentWindow: true, active: true });
 
-    if (tab.url!.startsWith('about:') || tab.url!.startsWith('chrome:')) {
-      chrome.notifications.create('inject-error', notificationOptions);
+  //   if (tab.url!.startsWith('about:') || tab.url!.startsWith('chrome:')) {
+  //     chrome.notifications.create('inject-error', notificationOptions);
+  //   }
+
+  //   await chrome.scripting
+  //     .executeScript({
+  //       target: { tabId: tab.id! },
+  //       files: ['/content-runtime/example.iife.js', '/content-runtime/all.iife.js'],
+  //     })
+  //     .catch(err => {
+  //       // Handling errors related to other paths
+  //       if (err.message.includes('Cannot access a chrome:// URL')) {
+  //         chrome.notifications.create('inject-error', notificationOptions);
+  //       }
+  //     });
+  // };
+
+  const openNetworkManagementButton = async () => {
+    if (chrome.runtime.openOptionsPage) {
+      // New way to open options pages, if supported (Chrome 42+)
+      chrome.runtime.openOptionsPage();
+    } else {
+      // Fallback for older Chrome versions (less common now)
+      window.open(chrome.runtime.getURL('options.html'));
     }
-
-    await chrome.scripting
-      .executeScript({
-        target: { tabId: tab.id! },
-        files: ['/content-runtime/example.iife.js', '/content-runtime/all.iife.js'],
-      })
-      .catch(err => {
-        // Handling errors related to other paths
-        if (err.message.includes('Cannot access a chrome:// URL')) {
-          chrome.notifications.create('inject-error', notificationOptions);
-        }
-      });
   };
 
   return (
@@ -43,16 +53,16 @@ const Popup = () => {
         <button onClick={goGithubSite}>
           <img src={chrome.runtime.getURL(logo)} className="App-logo" alt="logo" />
         </button>
-        <p>
+        {/* <p>
           Edit <code>pages/popup/src/Popup.tsx</code>
-        </p>
+        </p> */}
         <button
           className={cn(
             'mt-4 rounded px-4 py-1 font-bold shadow hover:scale-105',
             isLight ? 'bg-blue-200 text-black' : 'bg-gray-700 text-white',
           )}
-          onClick={injectContentScript}>
-          {t('injectButton')}
+          onClick={openNetworkManagementButton}>
+          {t('navigateNetworkManagementButton')}
         </button>
         <ToggleButton>{t('toggleTheme')}</ToggleButton>
       </header>

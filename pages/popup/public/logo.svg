@@ -1,0 +1,8 @@
+<!-- mod_tool_light.svg -->
+<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#222" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M12 4a8 8 0 0 0 0 16v24a8 8 0 0 0 0 16"/>
+  <circle cx="52" cy="16" r="4" fill="#222"/>
+  <circle cx="52" cy="32" r="4" fill="#222"/>
+  <circle cx="52" cy="48" r="4" fill="#222"/>
+  <path d="M28 32h20M48 16L28 16M28 48h20M48 16v32"/>
+</svg>

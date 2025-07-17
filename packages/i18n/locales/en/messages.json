@@ -1,17 +1,20 @@
 {
   "extensionDescription": {
     "description": "Extension description",
-    "message": "Chrome extension boilerplate developed with Vite, React and Typescript"
+    "message": "Network Modifier and Redirect tool for Chrome"
   },
   "extensionName": {
-    "description": "Extension name",
-    "message": "Chrome extension boilerplate"
+    "description": "Network Modifier",
+    "message": "Network Modifier"
   },
   "toggleTheme": {
     "message": "Toggle theme"
   },
   "injectButton": {
-    "message": "Click to inject Content Scripts"
+    "message": "Click to open Network management"
+  },
+  "navigateNetworkManagementButton": {
+    "message": "Click to open Network management"
   },
   "greeting": {
     "description": "Greeting message",
