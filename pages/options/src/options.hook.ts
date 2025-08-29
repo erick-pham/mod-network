@@ -1,14 +1,15 @@
 import { useEffect, useState } from 'react';
 
-const EMPTY_RULE = {
+const EMPTY_RULE: NetworkRule = {
   ruleId: '',
   isRedirect: false,
+  isRerirectHTTPRequest: false,
   ruleName: '',
   urlMethod: 'POST',
   urlFilter: '',
   redirectExampleURL: 'https://www.google.com/search?hl=en&q=youtube',
   redirectIncludePattern:
-    '^(?:https?:\/\/)?(?:www\\.)?google\\.com(?:\\/[^\\?#]*)?(?:\\?|&)(?:[^&]*&)?hl=([^&]*)&q=([^&]*)(?:&.*)?$',
+    '^(?:https?:\\/\\/)?(?:www\\.)?google\\.com(?:\\/[^\\?#]*)?(?:\\?|&)(?:[^&]*&)?hl=([^&]*)&q=([^&]*)(?:&.*)?$',
   redirectToURL: 'https://duckduckgo.com/?q=$1$2',
   mockResponse: '',
   reqHeaderName: '',
@@ -24,6 +25,7 @@ export type NetworkRule = {
   disable: boolean;
   ruleId: string;
   isRedirect: boolean;
+  isRerirectHTTPRequest: boolean;
   ruleName: string;
   urlMethod: string;
   urlFilter: string;

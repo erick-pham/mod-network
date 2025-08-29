@@ -1,5 +1,6 @@
 import 'webextension-polyfill';
 import { exampleThemeStorage } from '@extension/storage';
+import type { NetworkRule } from '../../../pages/options/src/options.hook';
 
 exampleThemeStorage.get().then(theme => {
   console.log('theme', theme);
@@ -33,6 +34,96 @@ const replacePlaceholders = ({
     return match; // Or return '' if you want to remove invalid placeholders
   });
 };
+
+// Apply rules on request headers
+// Load header rules from storage and apply to DNR
+const loadRules = async () => {
+  const data = await chrome.storage.local.get('mockConfigs');
+  const networkModRules: NetworkRule[] = data.mockConfigs || [];
+
+  const combinedRules = [];
+  let ruleId = 1;
+  networkModRules.forEach((networkRule: NetworkRule) => {
+    if (networkRule.reqHeaderName && networkRule.reqHeaderOp) {
+      ruleId++;
+      combinedRules.push({
+        id: ruleId,
+        priority: 1,
+        action: {
+          type: 'modifyHeaders',
+          requestHeaders: [
+            {
+              header: networkRule.reqHeaderName,
+              operation: networkRule.reqHeaderOp,
+              value: networkRule.reqHeaderValue,
+            },
+          ],
+        },
+        condition: {
+          urlFilter: networkRule.redirectIncludePattern,
+          resourceTypes: ['xmlhttprequest'], // 'main_frame'
+        },
+      });
+    }
+
+    if (networkRule.resHeaderName && networkRule.resHeaderOp) {
+      ruleId++;
+      combinedRules.push({
+        id: ruleId,
+        priority: 1,
+        action: {
+          type: 'modifyHeaders',
+          responseHeaders: [
+            {
+              header: networkRule.resHeaderName,
+              operation: networkRule.resHeaderOp,
+              value: networkRule.resHeaderValue,
+            },
+          ],
+        },
+        condition: {
+          urlFilter: networkRule.redirectIncludePattern,
+          resourceTypes: ['xmlhttprequest'], // 'main_frame'
+        },
+      });
+    }
+
+    if (networkRule.isRerirectHTTPRequest) {
+      ruleId++;
+      combinedRules.push({
+        id: ruleId,
+        priority: 1,
+        action: {
+          type: 'redirect',
+          redirect: { regexSubstitution: networkRule.redirectToURL },
+        },
+        condition: {
+          urlFilter: networkRule.redirectIncludePattern,
+          resourceTypes: ['xmlhttprequest'], // 'main_frame'
+        },
+      });
+    }
+  });
+
+  console.log('Applied DNR rules:', combinedRules);
+  // Replace all dynamic rules
+  await chrome.declarativeNetRequest.updateDynamicRules({
+    removeRuleIds: combinedRules.map(r => r.id),
+    addRules: combinedRules,
+  });
+};
+
+// Load rules on startup
+chrome.runtime.onInstalled.addListener(loadRules);
+chrome.runtime.onStartup.addListener(loadRules);
+
+// Refresh when rules change
+chrome.storage.onChanged.addListener((changes, area) => {
+  console.log('aa', area, changes);
+  if (area === 'local' && changes.mockConfigs) {
+    loadRules();
+  }
+});
 
 const redirectedTabs = new Map();
 chrome.webNavigation.onBeforeNavigate.addListener(

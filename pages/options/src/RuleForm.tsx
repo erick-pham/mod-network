@@ -1,7 +1,8 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import type { NetworkModifierReturn, NetworkRule } from './options.hook';
-import { useEffect, useRef, useState, type ChangeEvent } from 'react';
 import { replacePlaceholders, testRedirectPattern } from './utils';
+import { useEffect, useState } from 'react';
+import type { NetworkModifierReturn, NetworkRule } from './options.hook';
+import type { ChangeEvent } from 'react';
 
 type InputFieldProps = {
   label: string;
@@ -170,9 +171,9 @@ const RuleForm = ({ handleSaveRule, handleCancelEdit, setFormData, formData }: R
               <div className="grid w-1/2 grid-cols-12 gap-2">
                 <InputField
                   label="URL Filter"
-                  name="urlFilter"
+                  name="redirectIncludePattern"
                   placeholder="*://example.com/* or *"
-                  value={formData.urlFilter}
+                  value={formData.redirectIncludePattern}
                   onChange={handleInputChange}
                   colSize="col-span-12"
                 />
